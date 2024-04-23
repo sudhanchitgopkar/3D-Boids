@@ -24,6 +24,11 @@ void draw() {
   translate(width/2, height/2);
   rotateY(radians(rotAngle));
   
+  if (mousePressed) {
+    rotateY(map(mouseX, -width/2, width/2, 0, TWO_PI));
+    rotateX(map(mouseY, -height/2, height/2, 0, TWO_PI));
+  } //if
+  
   stroke(255);
   box(BOX_WIDTH);
   
