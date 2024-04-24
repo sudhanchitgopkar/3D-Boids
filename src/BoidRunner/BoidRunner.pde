@@ -62,5 +62,10 @@ void keyPressed() {
      case 'z':
        isRotating[2] = !isRotating[2];
        break;
+     case 'r':
+       rotAngles = new PVector(0, 0, 0);
+       for (int i = 0; i < 3; i++) {
+         isRotating[i] = false;
+       } //for
    } //switch
 } //keyPressed
