@@ -4,7 +4,7 @@ final int NUM_BOIDS = 50;
 
 PVector rotAngles;
 boolean [] isRotating;
-ArrayList<Boid> boids; 
+ArrayList<Boid> boids;
 
 void setup() {
   fullScreen(P3D);
@@ -30,9 +30,17 @@ void draw() {
   rotateZ(radians(rotAngles.z));
   
   if (mousePressed) {
-    rotateY(map(mouseX, -width/2, width/2, 0, TWO_PI));
-    rotateX(map(mouseY, -height/2, height/2, 0, TWO_PI));
+    rotAngles.x += map(mouseY - pmouseY, 0, height, 360, 0);
+    rotAngles.y += map(mouseX - pmouseX, 0, width, 0, 360);
   } //if
+  
+  if (isRotating[0]) rotAngles.x++;
+  if (isRotating[1]) rotAngles.y++;
+  if (isRotating[2]) rotAngles.z++;
+  
+  rotAngles.x %= 360;
+  rotAngles.y %= 360;
+  rotAngles.z %= 360;
   
   /* ===== BOX DRAWING ===== */
   stroke(255);
@@ -43,13 +51,14 @@ void draw() {
     b.flock();
     b.display();
   } //for
-  
-  /* ===== ROTATION HANDLING ===== */
-  if (isRotating[0]) rotAngles.x = ++rotAngles.x % 360;
-  if (isRotating[1]) rotAngles.y = ++rotAngles.y % 360;
-  if (isRotating[2]) rotAngles.z = ++rotAngles.z % 360;
   popMatrix();
 } //draw
+
+void stopRotating() {
+  for (int i = 0; i < 3; i++) {
+    isRotating[i] = false;
+  } //for
+} //stopRotating
 
 void keyPressed() {
    switch(key) {
@@ -64,8 +73,10 @@ void keyPressed() {
        break;
      case 'r':
        rotAngles = new PVector(0, 0, 0);
-       for (int i = 0; i < 3; i++) {
-         isRotating[i] = false;
-       } //for
+       stopRotating();
    } //switch
 } //keyPressed
+
+void mousePressed() {
+  stopRotating();
+} //mousePressed
