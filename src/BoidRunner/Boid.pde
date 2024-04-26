@@ -23,8 +23,8 @@ class Boid {
   public void display() {
     pushMatrix();
     translate(pos.x, pos.y, pos.z);
-    stroke(map(pos.dist(new PVector(0,0,0)), 0, BOX_WIDTH/2, 0, 255), 255, 255);
-    sphere(2);
+    stroke(map(pos.z, -BOX_WIDTH/2, BOX_WIDTH/2, 0, 255), 255, 255);
+    sphere(4);
     popMatrix();
   } //display
   
