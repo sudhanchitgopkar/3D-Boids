@@ -14,7 +14,7 @@ static class Quat {
     this.x = x;
     this.y = y;
     this.z = z;
-  }
+  } //Quat(float, float, float, float)
 
   public Quat(float w, PVector v) {
     this.w = w;
@@ -55,11 +55,11 @@ static class Quat {
     } else {
       return new PVector(x / beta, y / beta, z / beta);
     }
-  }
+  } //getAxis
 
   public float getAngle() {
     return (float) Math.acos(w) * 2;
-  }
+  } //getAngle
 
 } //Quat
 
