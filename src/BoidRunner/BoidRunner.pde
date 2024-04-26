@@ -1,6 +1,6 @@
 /* ============ G L O B A L S ============ */
 final int BOX_WIDTH = 500;
-final int NUM_BOIDS = 200;
+final int NUM_BOIDS = 50;
 
 PVector rotAngles;
 boolean [] isRotating;
