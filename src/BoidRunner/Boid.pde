@@ -1,13 +1,17 @@
 class Boid {
   ArrayList<Boid> flock;
   PVector pos, vel, acc;
-  int BOX_WIDTH;
   float visibility;
-    
+  int BOX_WIDTH;
+  float MAX_SPEED, MAX_FORCE;
+
   public Boid(int BOX_WIDTH, ArrayList<Boid> flock) {
     this.BOX_WIDTH = BOX_WIDTH;
+    MAX_SPEED = 2;
+    MAX_FORCE = .03;
+    
     this.flock = flock;
-    visibility = 50f;
+    visibility = 75;
     
     pos = PVector.random3D().mult(BOX_WIDTH);
     vel = PVector.random3D();
@@ -31,9 +35,9 @@ class Boid {
     acc.add(ali);
     acc.add(coh);
         
-    acc.limit(4);
     vel.add(acc);
-    vel.limit(4);
+    vel.limit(MAX_SPEED);
+    acc.mult(0);
     
     pos.add(vel);
     bound();
@@ -49,17 +53,34 @@ class Boid {
                     .normalize().div(getDist(b)));
         } //if
     } //for
-    return sep.normalize();
+    
+    if (numVis > 0) {
+      sep.div(numVis);
+      sep.setMag(MAX_SPEED);
+      sep.sub(vel);
+      sep.limit(MAX_FORCE);
+    } //if
+    
+    return sep;
   } //sep
   
   private PVector ali() {
     PVector ali = new PVector(0, 0, 0);
+    int numVis = 0;
     for (Boid b : flock) {
       if (isVis(b)) {
+        ++numVis;
         ali.add(b.vel);  
       } //if
     } //for
-    return ali.normalize();
+    
+    if (numVis > 0) {
+      ali.div(numVis);
+      ali.setMag(MAX_SPEED);
+      ali.sub(vel);
+      ali.limit(MAX_FORCE);
+    } //if
+    return ali;
   } //ali
   
   private PVector coh() {
@@ -71,13 +92,20 @@ class Boid {
         coh.add(b.pos);
       } //if
     } //for
-    if (numVis > 0) coh.div(numVis);
-    return PVector.sub(coh, this.pos).normalize();
+    if (numVis > 0) {
+      coh.div(numVis);
+      PVector desired = PVector.sub(coh, this.pos);
+      desired.setMag(MAX_SPEED);
+      desired.sub(vel);
+      desired.limit(MAX_FORCE);
+      return desired;
+    }
+    return coh;
   } //coh
   
   private boolean isVis(Boid b) {
     float dist = pos.dist(b.pos);
-    return  dist <= visibility && dist > 0;
+    return dist <= visibility && dist > 0;
   } //isVis
   
   private float getDist(Boid b) {
