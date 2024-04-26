@@ -37,6 +37,7 @@ class Arcball {
   public void update() {
     PVector start = getBallQuat(new PVector(pmouseX, pmouseY));
     PVector end = getBallQuat(new PVector(mouseX, mouseY));
-    quat = mult(new Quat(0, start), new Quat(0, end));
+    // quat = mult(new Quat(0, start), new Quat(0, end));
+    quat = mult(new Quat(0, end), mult(new Quat(0, start), -1));
   }
 } //Arcball

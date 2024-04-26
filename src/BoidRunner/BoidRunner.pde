@@ -35,8 +35,7 @@ void draw() {
   // rotateZ(radians(rotAngles.z));
   float angle = rotQuat.getAngle();
   PVector axis = rotQuat.getAxis();
-  rotate(angle, -axis.x, -axis.y, axis.z); 
-  
+  rotate(angle, axis.x, axis.y, axis.z); 
   
   if (mousePressed) {
     // rotAngles.x += map(mouseY - pmouseY, 0, height, 360, 0);
