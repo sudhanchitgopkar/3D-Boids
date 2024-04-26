@@ -19,13 +19,9 @@ class Arcball {
   } //Arcball(PVector, float)
 
   // ============== Instance Methods =============
-  public PVector getAxis() {
-    return quat.getAxis();
-  } //getAxis()
-
-  public float getAngle() {
-    return quat.getAngle();
-  } //getAngle()
+  public Quat getQuat() {
+    return quat;
+  } //getQuat()
 
   private PVector getBallQuat(PVector mouse) {
     PVector v = new PVector();
@@ -38,7 +34,7 @@ class Arcball {
     return v;
   }
   
-  public void updateRotationQuat() {
+  public void update() {
     PVector start = getBallQuat(new PVector(pmouseX, pmouseY));
     PVector end = getBallQuat(new PVector(mouseX, mouseY));
     quat = mult(new Quat(0, start), new Quat(0, end));

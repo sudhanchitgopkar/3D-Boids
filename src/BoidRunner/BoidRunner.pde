@@ -5,6 +5,8 @@ final int NUM_BOIDS = 50;
 PVector rotAngles;
 boolean [] isRotating;
 ArrayList<Boid> boids;
+Arcball arcball;
+Quat rotQuat;
 
 void setup() {
   fullScreen(P3D);
@@ -18,6 +20,9 @@ void setup() {
   for (int i = 0; i < NUM_BOIDS; i++) {
     boids.add(new Boid(BOX_WIDTH, boids));
   } //for
+
+  arcball = new Arcball(new PVector(width/2, height/2, 0), Math.max(width, height) / 2);
+  rotQuat = new Quat();
 } //setup
 
 void draw() {
@@ -25,13 +30,19 @@ void draw() {
   background(0);
   pushMatrix();
   translate(width/2, height/2);
-  rotateX(radians(rotAngles.x));
-  rotateY(radians(rotAngles.y));
-  rotateZ(radians(rotAngles.z));
+  // rotateX(radians(rotAngles.x));
+  // rotateY(radians(rotAngles.y));
+  // rotateZ(radians(rotAngles.z));
+  float angle = rotQuat.getAngle();
+  PVector axis = rotQuat.getAxis();
+  rotate(angle, -axis.x, -axis.y, axis.z); 
+  
   
   if (mousePressed) {
-    rotAngles.x += map(mouseY - pmouseY, 0, height, 360, 0);
-    rotAngles.y += map(mouseX - pmouseX, 0, width, 0, 360);
+    // rotAngles.x += map(mouseY - pmouseY, 0, height, 360, 0);
+    // rotAngles.y += map(mouseX - pmouseX, 0, width, 0, 360);
+    arcball.update();
+    rotQuat = mult(arcball.getQuat(), rotQuat);
   } //if
   
   if (isRotating[0]) rotAngles.x++;
