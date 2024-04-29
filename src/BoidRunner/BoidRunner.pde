@@ -45,6 +45,7 @@ void draw() {
   quatAxis = rotQuat.getAxis();
   rotate(quatAngle, quatAxis.x, quatAxis.y, quatAxis.z); 
   
+  /* === AXES ===
   strokeWeight(5);
   stroke(75, 255, 255, 50);
   line(-BOX_WIDTH/2, 0, 0, BOX_WIDTH/2, 0, 0);
@@ -55,6 +56,7 @@ void draw() {
   stroke(225, 255, 255, 50);
   line(0, 0, -BOX_WIDTH/2, 0, 0, BOX_WIDTH/2);
   strokeWeight(1);
+  ================ */
   
   if (mousePressed) {
     arcball.update();
