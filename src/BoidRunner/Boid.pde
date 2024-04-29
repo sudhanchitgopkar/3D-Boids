@@ -5,30 +5,33 @@ class Boid {
   int BOX_WIDTH;
   float MAX_SPEED, MAX_FORCE;
   float SEP_WEIGHT, ALI_WEIGHT, COH_WEIGHT;
+  float r;
 
   public Boid(int BOX_WIDTH, ArrayList<Boid> flock) {
-    this.BOX_WIDTH = BOX_WIDTH;
-    MAX_SPEED = 2;
-    MAX_FORCE = .03;
-    SEP_WEIGHT = 1.0;
-    ALI_WEIGHT = 1.4;
-    COH_WEIGHT = 0.8;
-    
     this.flock = flock;
-    visibility = 75;
     
     pos = PVector.random3D().mult(5);
     vel = PVector.random3D();
     acc = PVector.random3D();
-    bound();
+    visibility = 85;
     
+    this.BOX_WIDTH = BOX_WIDTH;
+    MAX_SPEED = 3;
+    MAX_FORCE = .02;
+    SEP_WEIGHT = 1.8;
+    ALI_WEIGHT = 2.0;
+    COH_WEIGHT = 1.8;
+    
+    r = 5;
+    wallBounce();
   } //Boid
   
   public void display() {
     pushMatrix();
     translate(pos.x, pos.y, pos.z);
-    stroke(map(pos.z, -BOX_WIDTH/2, BOX_WIDTH/2, 0, 255), 255, 255);
-    sphere(4);
+    rotateX(vel.x);
+    rotateY(vel.y);
+    box(5);    
     popMatrix();
   } //display
   
@@ -48,7 +51,7 @@ class Boid {
     acc.mult(0);
     
     pos.add(vel);
-    bound();
+    wallBounce();
   } //flock
   
   private PVector sep() {
@@ -116,8 +119,17 @@ class Boid {
     return dist <= visibility && dist > 0;
   } //isVis
   
+  private boolean isVis(PVector p) {
+    float dist = pos.dist(p);
+    return dist <= 8 * visibility && dist > 0;
+  } //isVis
+  
   private float getDist(Boid b) {
     return pos.dist(b.pos);
+  } //getDist
+  
+  private float getDist(PVector p) {
+    return pos.dist(p);
   } //getDist
   
   private void bound() {
@@ -125,4 +137,11 @@ class Boid {
     pos.y = pos.y <= -BOX_WIDTH/2 ?  BOX_WIDTH/2 : pos.y >= BOX_WIDTH/2 ? -BOX_WIDTH/2 : pos.y;
     pos.z = pos.z <= -BOX_WIDTH/2 ?  BOX_WIDTH/2 : pos.z >= BOX_WIDTH/2 ? -BOX_WIDTH/2 : pos.z;
   } //bound
+  
+  private void wallBounce() {
+    vel.x = pos.x <= -BOX_WIDTH/2  || pos.x >= BOX_WIDTH/2 ? -vel.x : vel.x;
+    vel.y = pos.y <= -BOX_WIDTH/2  || pos.y >= BOX_WIDTH/2 ? -vel.y : vel.y;
+    vel.z = pos.z <= -BOX_WIDTH/2  || pos.z >= BOX_WIDTH/2 ? -vel.z : vel.z;
+  } //bound
+   
 } //Boid
