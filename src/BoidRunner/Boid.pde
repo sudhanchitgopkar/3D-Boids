@@ -4,16 +4,20 @@ class Boid {
   float visibility;
   int BOX_WIDTH;
   float MAX_SPEED, MAX_FORCE;
+  float SEP_WEIGHT, ALI_WEIGHT, COH_WEIGHT;
 
   public Boid(int BOX_WIDTH, ArrayList<Boid> flock) {
     this.BOX_WIDTH = BOX_WIDTH;
     MAX_SPEED = 2;
     MAX_FORCE = .03;
+    SEP_WEIGHT = 1.0;
+    ALI_WEIGHT = 1.4;
+    COH_WEIGHT = 0.8;
     
     this.flock = flock;
     visibility = 75;
     
-    pos = PVector.random3D().mult(BOX_WIDTH);
+    pos = PVector.random3D().mult(5);
     vel = PVector.random3D();
     acc = PVector.random3D();
     bound();
@@ -31,10 +35,14 @@ class Boid {
   public void flock() {
     PVector sep = sep(), ali = ali(), coh = coh();
     
+    sep.mult(SEP_WEIGHT);
+    ali.mult(ALI_WEIGHT);
+    coh.mult(COH_WEIGHT);
+    
     acc.add(sep);
     acc.add(ali);
     acc.add(coh);
-        
+     
     vel.add(acc);
     vel.limit(MAX_SPEED);
     acc.mult(0);
