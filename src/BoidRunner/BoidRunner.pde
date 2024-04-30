@@ -2,8 +2,8 @@ import controlP5.*;
 
 /* ============ G L O B A L S ============ */
 final int BOX_WIDTH = 450;
-final int NUM_BOIDS = 300;
-final int NUM_OBSTACLES = int(random(2,6));
+int NUM_BOIDS = 600;
+final int NUM_OBSTACLES = int(random(1, 5));
 
 ArrayList<Boid> boids;
 ArrayList<Obstacle> obstacles;
@@ -33,7 +33,7 @@ void setup() {
   //Random Obstacle Setup
   obstacles = new ArrayList<Obstacle> ();
   for (int i = 0; i < NUM_OBSTACLES; i++) {
-    float r = random(30, 50);
+    float r = random(50, 90);
     obstacles.add(new Obstacle(new PVector(random(-BOX_WIDTH/2 + r, BOX_WIDTH/2 - r), 
                                            random(-BOX_WIDTH/2 + r, BOX_WIDTH/2 - r),
                                            random(-BOX_WIDTH/2 + r, BOX_WIDTH/2 - r)), r));
@@ -54,22 +54,22 @@ void setup() {
   for (int i = 0; i < 3; i++) {
     xyzQuats[i] = new Quat();
   } //for
-  xyzQuats[0].set((float) Math.cos(radians(0.5)), new PVector(-(float) Math.sin(radians(0.5)), 0, 0));
-  xyzQuats[1].set((float) Math.cos(radians(0.5)), new PVector(0, (float) Math.sin(radians(0.5)), 0));
-  xyzQuats[2].set((float) Math.cos(radians(0.5)), new PVector(0, 0, (float) -Math.sin(radians(0.5))));
+  xyzQuats[0].set((float) Math.cos(radians(0.2)), new PVector(-(float) Math.sin(radians(0.2)), 0, 0));
+  xyzQuats[1].set((float) Math.cos(radians(0.2)), new PVector(0, (float) Math.sin(radians(0.2)), 0));
+  xyzQuats[2].set((float) Math.cos(radians(0.2)), new PVector(0, 0, (float) -Math.sin(radians(0.2))));
 } //setup
 
 void draw() {
   /* ===== ROTATION HANDLING ===== */
   background(0);
-  
+  lights();
   pushMatrix();
   translate(width/2, height/2, 0);
 
   quatAngle = rotQuat.getAngle();
   quatAxis = rotQuat.getAxis();
   rotate(quatAngle, quatAxis.x, quatAxis.y, quatAxis.z); 
-  if (mousePressed && keyPressed) {
+  if (mousePressed && (keyPressed || guiHidden)) {
     stopRotating();
     arcball.update();
     rotQuat = mult(arcball.getQuat(), rotQuat);
@@ -79,8 +79,10 @@ void draw() {
   if (xyzRotating[2]) rotQuat = mult(xyzQuats[2], rotQuat);
   
   /* ===== BOX DRAWING ===== */
+  strokeWeight(2);
   stroke(255);
   box(BOX_WIDTH);
+  strokeWeight(1);
   noFill();
   
   /* ===== BOID RENDERING ===== */
@@ -93,20 +95,16 @@ void draw() {
     b.display();
   } //for
   
-  /* === AXES  DRAWING ===
-  strokeWeight(5);
-  stroke(75, 255, 255, 50);
-  line(-BOX_WIDTH/2, 0, 0, BOX_WIDTH/2, 0, 0);
-  
-  stroke(150, 255, 255, 50);
-  line(0, -BOX_WIDTH/2, 0, 0, BOX_WIDTH/2, 0);
-  
-  stroke(225, 255, 255, 50);
-  line(0, 0, -BOX_WIDTH/2, 0, 0, BOX_WIDTH/2);
-  strokeWeight(1);
-  ======================== */
-  
   popMatrix();
+  
+  int numDesired = int(cp5.getController("NUM BOIDS").getValue());
+  if (NUM_BOIDS != numDesired) {
+    NUM_BOIDS = numDesired;
+    boids = new ArrayList<Boid> ();
+    for (int i = 0; i < NUM_BOIDS; i++) {
+      boids.add(new Boid(BOX_WIDTH, boids, obstacles));
+    } //for
+  } //if
 } //draw
 
 void stopRotating() {
@@ -127,15 +125,13 @@ void keyPressed() {
       xyzRotating[2] = !xyzRotating[2];
       break;
     case 'r':
-      xyzRotating = new boolean [] {false, true, false};
-      xyzQuats[0].set((float) Math.cos(radians(0.5)), new PVector(-(float) Math.sin(radians(0.5)), 0, 0));
-      xyzQuats[1].set((float) Math.cos(radians(0.5)), new PVector(0, (float) Math.sin(radians(0.5)), 0));
-      xyzQuats[2].set((float) Math.cos(radians(0.5)), new PVector(0, 0, (float) -Math.sin(radians(0.5))));
-      break;
+     setup();
+     break;
     case 'g':
       guiHidden = !guiHidden;
       if (guiHidden) cp5.hide();
       else cp5.show();
+      break;
   } //switch
 } //keyPressed
 
@@ -159,7 +155,7 @@ void initGUI() {
        .setPosition(40, 100)
        .setSize(100, 20)
        .setRange(0, 10)
-       .setValue(2.8)
+       .setValue(1.4)
        .setColorCaptionLabel(color(255));
   cp5.addSlider("WALL AVOIDANCE WEIGHT")
        .setFont(font)
@@ -181,5 +177,12 @@ void initGUI() {
        .setSize(100, 20)
        .setRange(10, 200)
        .setValue(25)
+       .setColorCaptionLabel(color(255));
+  cp5.addSlider("NUM BOIDS")
+       .setFont(font)
+       .setPosition(40, 220)
+       .setSize(100, 20)
+       .setRange(100, 800)
+       .setValue(300)
        .setColorCaptionLabel(color(255));
 } //initGUI

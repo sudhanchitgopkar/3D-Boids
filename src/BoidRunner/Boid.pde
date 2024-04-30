@@ -15,20 +15,20 @@ class Boid {
     this.obstacles = obstacles;
     
     pos = PVector.random3D().mult(5);    //Controls how far boids spawn from ea. other
-    vel = PVector.random3D().mult(0.2);
+    vel = new PVector(cos(random(PI/4)), sin(random(PI/4)), cos(random(PI/4)));
     acc = PVector.random3D();
     VISIBILITY = 25;
     
     this.BOX_WIDTH = BOX_WIDTH;
-    MAX_SPEED = 3;
-    MAX_FORCE = .2;
+    MAX_SPEED = 2;
+    MAX_FORCE = .03;
     SEP_WEIGHT = 3.5;
     ALI_WEIGHT = 3.2;
-    COH_WEIGHT = 2.8;
+    COH_WEIGHT = 1.4;
     OBS_WEIGHT = 4.0;
     WALL_WEIGHT = 4.0;
     
-    r = 10;
+    r = 4;
     bound();
   } //Boid
   
@@ -36,10 +36,16 @@ class Boid {
     pushMatrix();
     translate(pos.x, pos.y, pos.z);
     noStroke();
-    fill(100);
-    sphere(r);    
+    colorMode(HSB);
+    fill(map(PVector.dist(pos,new PVector(0,0,0)),0, BOX_WIDTH, 0,255),255,255);
+    colorMode(RGB);
+    PVector tip = PVector.mult(vel.normalize(null), 2*r);
+    box(r);
+    colorMode(HSB);
+    stroke(map(PVector.dist(pos,new PVector(0,0,0)),0, BOX_WIDTH, 0,255),255,255);
+    colorMode(RGB);
+    line(0,0,0,tip.x,tip.y,tip.z);
     noFill();
-    stroke(255);
     popMatrix();
   } //display
   
@@ -145,7 +151,7 @@ class Boid {
   
   private PVector avoid(Obstacle o) {
     PVector avo = new PVector(); 
-    if (pos.dist(o.pos) > o.r) return avo; //If out of eyesight
+    if (pos.dist(o.pos) > o.r + VISIBILITY) return avo; //If out of eyesight
     
     avo.set(PVector.sub(pos,o.pos)); 
     avo.mult(1/PVector.dist(pos,o.pos));  //Weight by proximity

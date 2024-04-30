@@ -10,8 +10,10 @@ public class Obstacle {
   public void display() {
     pushMatrix();
     translate(pos.x, pos.y, pos.z);
-    fill(255);
-    box(r);
+    fill(255,0,0);
+    sphereDetail(4);
+    sphere(r/2);
+    stroke(255);
     noFill();
     popMatrix();
   } //display
