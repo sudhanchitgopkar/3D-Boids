@@ -1,13 +1,16 @@
-import controlP5.*;
+import controlP5.*; //used for GUI
 
-/* ============ G L O B A L S ============ */
+/* ============ GLOBALS ============ */
+//Params
 final int BOX_WIDTH = 450;
-int NUM_BOIDS = 600;
 final int NUM_OBSTACLES = int(random(1, 5));
+int NUM_BOIDS = 600;
 
+//Objects
 ArrayList<Boid> boids;
 ArrayList<Obstacle> obstacles;
 
+//Rotation
 Arcball arcball;
 Quat rotQuat;
 float quatAngle;
@@ -15,9 +18,11 @@ PVector quatAxis;
 boolean [] xyzRotating;
 Quat[] xyzQuats;
 
+//GUI
 ControlP5 cp5;  
 boolean guiHidden;
 ControlFont font;
+/* ============ END GLOBALS ============ */
 
 void setup() {
   fullScreen(P3D);
@@ -26,11 +31,12 @@ void setup() {
   
   //GUI Setup
   PFont pfont = createFont("courier",12,true);
+  textFont(pfont);
   font = new ControlFont(pfont,12);
   cp5 = new ControlP5(this);
   initGUI();
   
-  //Random Obstacle Setup
+  //Obstacle Setup
   obstacles = new ArrayList<Obstacle> ();
   for (int i = 0; i < NUM_OBSTACLES; i++) {
     float r = random(50, 90);
@@ -39,7 +45,7 @@ void setup() {
                                            random(-BOX_WIDTH/2 + r, BOX_WIDTH/2 - r)), r));
   } //for
   
-  //Boid Flock Setup
+  //Boid Setup
   boids = new ArrayList<Boid> ();
   for (int i = 0; i < NUM_BOIDS; i++) {
     boids.add(new Boid(BOX_WIDTH, boids, obstacles));
@@ -60,12 +66,14 @@ void setup() {
 } //setup
 
 void draw() {
-  /* ===== ROTATION HANDLING ===== */
-  background(0);
+  background(0); //black
+  if (!guiHidden) writeKeyBinds();
   lights();
+  
   pushMatrix();
-  translate(width/2, height/2, 0);
-
+  translate(width/2, height/2, 0); //screen center = (0,0)
+  
+  /* ===== ROTATION HANDLING ===== */
   quatAngle = rotQuat.getAngle();
   quatAxis = rotQuat.getAxis();
   rotate(quatAngle, quatAxis.x, quatAxis.y, quatAxis.z); 
@@ -77,6 +85,7 @@ void draw() {
   if (xyzRotating[0]) rotQuat = mult(xyzQuats[0], rotQuat);
   if (xyzRotating[1]) rotQuat = mult(xyzQuats[1], rotQuat);
   if (xyzRotating[2]) rotQuat = mult(xyzQuats[2], rotQuat);
+  /* ===== END ROTATION HANDLING ===== */
   
   /* ===== BOX DRAWING ===== */
   strokeWeight(2);
@@ -84,8 +93,9 @@ void draw() {
   box(BOX_WIDTH);
   strokeWeight(1);
   noFill();
+  /* ===== END BOX DRAWING ===== */
   
-  /* ===== BOID RENDERING ===== */
+  /* ===== OBJECT RENDERING ===== */
   for (Obstacle o : obstacles) {
     o.display();  
   } //for
@@ -94,9 +104,10 @@ void draw() {
     b.flock();
     b.display();
   } //for
-  
+  /* ===== END OBJECT RENDERING ===== */
   popMatrix();
   
+  /* ===== UPDATE NUM_BOIDS FROM GUI ===== */
   int numDesired = int(cp5.getController("NUM BOIDS").getValue());
   if (NUM_BOIDS != numDesired) {
     NUM_BOIDS = numDesired;
@@ -105,14 +116,21 @@ void draw() {
       boids.add(new Boid(BOX_WIDTH, boids, obstacles));
     } //for
   } //if
+  /* ===== END UPDATE NUM_BOIDS FROM GUI ===== */
 } //draw
 
+/**
+  Stops all auto-rotation on Simbox.
+*/
 void stopRotating() {
   for (int i = 0; i < 3; i++) {
     xyzRotating[i] = false;
   } //for
 } //stopRotating
 
+/**
+  Handles all key-presses during Sim.
+*/
 void keyPressed() {
   switch(key) {
     case 'x':
@@ -135,6 +153,9 @@ void keyPressed() {
   } //switch
 } //keyPressed
 
+/**
+  Initializes GUI sliders
+*/
 void initGUI() {
   cp5.addSlider("SEPARATION WEIGHT")
        .setFont(font)
@@ -186,3 +207,17 @@ void initGUI() {
        .setValue(300)
        .setColorCaptionLabel(color(255));
 } //initGUI
+
+/**
+  Displays key-bindings to screen.
+*/
+void writeKeyBinds() {
+  fill(255);
+  text("KEYBINDINGS:", 40, 270);
+  text("X,Y,Z: AUTO-ROTATE X,Y,Z AXIS", 40, 290);
+  text("G: TOGGLE GUI", 40, 310);
+  text("R: CREATE NEW SCENE", 40, 330);
+  text("MOUSE*: ROTATE SIMBOX", 40, 350);
+  text("*HOLD SHIFT IF GUI ON", 40, 370);
+  noFill();
+} //writeKeyBinds

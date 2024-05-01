@@ -1,5 +1,5 @@
 class Boid {
-  /* ============ G L O B A L S ============ */
+  /* ============ GLOBALS ============ */
   ArrayList<Boid> flock;
   ArrayList<Obstacle> obstacles;
   
@@ -9,7 +9,15 @@ class Boid {
   int BOX_WIDTH;
   float MAX_SPEED, MAX_FORCE;
   float SEP_WEIGHT, ALI_WEIGHT, COH_WEIGHT, OBS_WEIGHT, WALL_WEIGHT, VISIBILITY;
-
+  /* ============ END GLOBALS ============ */
+  
+  /* ============ CONSTRUCTORS ============ */
+  /**
+    Creates a new boid with specified params.
+    @param BOX_WIDTH width of the simulation box
+    @param flock list of all other boids in the simulation
+    @param obstacles list of all obstacles in the simulation
+  */
   public Boid(int BOX_WIDTH, ArrayList<Boid> flock, ArrayList<Obstacle> obstacles) {
     this.flock = flock;
     this.obstacles = obstacles;
@@ -31,7 +39,11 @@ class Boid {
     r = 4;
     bound();
   } //Boid
+  /* ============ END CONSTRUCTORS ============ */
   
+  /**
+    Displays a boid to the screen.
+  */
   public void display() {
     pushMatrix();
     translate(pos.x, pos.y, pos.z);
@@ -49,10 +61,14 @@ class Boid {
     popMatrix();
   } //display
   
+  /**
+    Moves the boid based on flocking and avoidance forces.
+  */
   public void flock() {
     PVector sep = sep(), ali = ali(), coh = coh();  //Standard Boid forces
     PVector avo = wallAvoid();
     
+    //Get weights from GUI
     SEP_WEIGHT = cp5.getController("SEPARATION WEIGHT").getValue();
     ALI_WEIGHT = cp5.getController("ALIGNMENT WEIGHT").getValue();
     COH_WEIGHT = cp5.getController("COHESION WEIGHT").getValue();
@@ -75,14 +91,18 @@ class Boid {
     acc.add(coh);
     acc.add(avo);
     
-    vel.add(acc); //Update velocity
+    vel.add(acc);         //Update velocity
     vel.limit(MAX_SPEED);
-    acc.mult(0);  //Reset acceleration
+    acc.mult(0);          //Reset acceleration
     
-    pos.add(vel); //Update position
-    bound();      //Handle any OOB
+    pos.add(vel);         //Update position
+    bound();              //Handle any OOB
   } //flock
   
+  /**
+    Generates separation force.
+    @return separation vector
+  */
   private PVector sep() {
     PVector sep = new PVector(0, 0, 0);
     int numVis = 0;
@@ -105,6 +125,10 @@ class Boid {
     return sep;
   } //sep
   
+  /**
+    Generates alignment force.
+    @return alignment vector
+  */
   private PVector ali() {
     PVector ali = new PVector(0, 0, 0);
     int numVis = 0;
@@ -126,6 +150,10 @@ class Boid {
     return ali;
   } //ali
   
+  /**
+    Generates cohesion force.
+    @return cohesion vector
+  */
   private PVector coh() {
     PVector coh = new PVector(0,0,0);
     int numVis = 0;
@@ -149,6 +177,11 @@ class Boid {
     return coh;
   } //coh
   
+  /**
+    Generates force to avoid specified obstacle.
+    @param o the obstacle to avoid
+    @return force away from obstacle
+  */
   private PVector avoid(Obstacle o) {
     PVector avo = new PVector(); 
     if (pos.dist(o.pos) > o.r + VISIBILITY) return avo; //If out of eyesight
@@ -160,21 +193,10 @@ class Boid {
     return avo;
   } //avoid
   
-  private boolean isVis(Boid b) {
-    float dist = pos.dist(b.pos);
-    return dist <= VISIBILITY && dist > 0;
-  } //isVis
-  
-  private float getDist(Boid b) {
-    return pos.dist(b.pos);
-  } //getDist
-  
-  private void bound() {
-    pos.x = pos.x <= -BOX_WIDTH/2 ?  BOX_WIDTH/2 - 10: pos.x >= BOX_WIDTH/2 ? -BOX_WIDTH/2 + 10 : pos.x;
-    pos.y = pos.y <= -BOX_WIDTH/2 ?  BOX_WIDTH/2 - 10: pos.y >= BOX_WIDTH/2 ? -BOX_WIDTH/2 + 10 : pos.y;
-    pos.z = pos.z <= -BOX_WIDTH/2 ?  BOX_WIDTH/2 - 10: pos.z >= BOX_WIDTH/2 ? -BOX_WIDTH/2 + 10 : pos.z;
-  } //bound
-  
+  /**
+    Generates a force pushing away from walls close by.
+    @return vector pushing away from walls close by
+  */
   private PVector wallAvoid() {
     PVector avo = new PVector(0, 0, 0); 
     PVector walls [] = {new PVector(-BOX_WIDTH/2, pos.y, pos.z),
@@ -196,4 +218,33 @@ class Boid {
     
     return avo;
   } //wallAvoid
+  
+  /**
+    Allows boids to reappear on the opposite side when
+    they fly out of the simulation box.
+  */
+  private void bound() {
+    pos.x = pos.x <= -BOX_WIDTH/2 ?  BOX_WIDTH/2 - 10: pos.x >= BOX_WIDTH/2 ? -BOX_WIDTH/2 + 10 : pos.x;
+    pos.y = pos.y <= -BOX_WIDTH/2 ?  BOX_WIDTH/2 - 10: pos.y >= BOX_WIDTH/2 ? -BOX_WIDTH/2 + 10 : pos.y;
+    pos.z = pos.z <= -BOX_WIDTH/2 ?  BOX_WIDTH/2 - 10: pos.z >= BOX_WIDTH/2 ? -BOX_WIDTH/2 + 10 : pos.z;
+  } //bound
+  
+  /**
+    Determines if a boid is visible to this boid.
+    @param b the boid to check visibility of
+    @return whether the boid is visible
+  */
+  private boolean isVis(Boid b) {
+    float dist = pos.dist(b.pos);
+    return dist <= VISIBILITY && dist > 0;
+  } //isVis
+  
+  /**
+    Gets distance from this to a specified boid.
+    @param b the boid to get distance to
+    @return the distance from this to a specified boid
+  */
+  private float getDist(Boid b) {
+    return pos.dist(b.pos);
+  } //getDist
 } //Boid
