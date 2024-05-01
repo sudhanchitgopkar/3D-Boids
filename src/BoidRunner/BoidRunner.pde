@@ -3,8 +3,8 @@ import controlP5.*; //used for GUI
 /* ============ GLOBALS ============ */
 //Params
 final int BOX_WIDTH = 450;
-final int NUM_OBSTACLES = int(random(1, 5));
-int NUM_BOIDS = 600;
+int NUM_OBSTACLES;
+int NUM_BOIDS;
 
 //Objects
 ArrayList<Boid> boids;
@@ -37,6 +37,7 @@ void setup() {
   initGUI();
   
   //Obstacle Setup
+  NUM_OBSTACLES = int(random(1, 5));
   obstacles = new ArrayList<Obstacle> ();
   for (int i = 0; i < NUM_OBSTACLES; i++) {
     float r = random(50, 90);
@@ -46,6 +47,7 @@ void setup() {
   } //for
   
   //Boid Setup
+  NUM_BOIDS = 600;
   boids = new ArrayList<Boid> ();
   for (int i = 0; i < NUM_BOIDS; i++) {
     boids.add(new Boid(BOX_WIDTH, boids, obstacles));
