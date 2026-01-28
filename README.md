@@ -5,7 +5,7 @@ CS 175, Computer Graphics Final Project. Harvard University, School of Engineeri
 ## Installation
 There are two ways to run this application: (1) directly from the build files or (2) by compiling from source.
 ### Running from Build
-1. Find and download the build file suited to your machine [here](https://drive.google.com/drive/folders/1mWGLuv5E4tNUZq9oCFuCkNrkVfUuH_uW?usp=sharing).
+1. Find and download the build file suited to your machine from the [releases](https://github.com/sudhanchitgopkar/3D-Boids/releases/).
 	* Build files currently exist for 64-bit Windows, 64-bit Mac OS, and Mx/ARM Mac OS systems only.
 2. Unzip the file, and run the `.exe` (Windows) or the `.app` (Mac)
 	* If you encounter issues running on Mac OS due to security-related prompts, follow these steps:
@@ -20,7 +20,8 @@ There are two ways to run this application: (1) directly from the build files or
 2. Clone this repository
 	```$ git clone git@github.com:sudhanchitgopkar/3D-Boids.git```
 3. Navigate to the repository `$ cd 3d-Boids` and `$ open BoidRunner.pde`
-4. Press the play button on the top left of the Processing IDE
+4. Install the ControlP5 library from Sketch > Import Library > Manage Libraries > ControlP5
+5. Press the play button on the top left of the Processing IDE
 
 ## Usage
 The simulation can be modified using the following controls:
